@@ -1,13 +1,9 @@
 package lol.sylvie.petprotect;
 
-//import net.fabricmc.api.ModInitializer;
-//import net.fabricmc.fabric.api.event.player.AttackEntityCallback;
-//import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.player.Player;
-import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.ModContainer;
@@ -16,8 +12,6 @@ import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.config.ModConfig;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.event.entity.player.PlayerEvent;
-import net.neoforged.neoforge.event.entity.player.SweepAttackEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +38,66 @@ public class PetProtect{
 
             if (event.getTarget() instanceof TamableAnimal tameable) {
                 if (tameable.getOwner() == null) return;
-
-                if (!(tameable.isOwnedBy(event.getEntity()) && Config.allowOwnerDamage)) {
+                if (event.getEntity() instanceof Player  && !Config.allowPlayerDamage)
+                {
                     event.setCanceled(true);
+                    return;
+                }
+                if ((tameable.isOwnedBy(event.getEntity()) && !Config.allowOwnerDamage)) {
+                    event.setCanceled(true);
+                    return;
+                }
+            }
+            if (event.getTarget() instanceof OwnableEntity ownable) {
+                if (ownable.getOwner() == null) return;
+                if (event.getEntity()  instanceof Player  && !Config.allowPlayerDamage)
+                {
+                    event.setCanceled(true);
+                    return;
+                }
+                if ((ownable.getOwner().is(event.getEntity()) && !Config.allowOwnerDamage)) {
+                    event.setCanceled(true);
+                }
+            }
+        }
+        @SubscribeEvent
+        public static void OnEntityHurt(LivingDamageEvent.Pre event)
+        {
+            if (!Config.preventPetDamage) return;
+            if (event.getSource().getEntity() instanceof Player player)
+            {
+                if (player.isSpectator()) return;
+                if (Config.ignoreCreative && player.isCreative()) return;
+
+            }
+
+            if (event.getEntity() instanceof TamableAnimal tameable) {
+                if (tameable.getOwner() == null) return;
+
+                if (event.getSource().getEntity() instanceof Player && !Config.allowPlayerDamage)
+                {
+                    event.setNewDamage(0);
+                    return;
+                }
+
+                if ((event.getSource().getEntity() instanceof LivingEntity living && (tameable.isOwnedBy(living) && !Config.allowOwnerDamage))) {
+                    event.setNewDamage(0);
+                }
+            }
+            if (event.getEntity() instanceof OwnableEntity ownable)
+            {
+                if (ownable.getOwner() == null) return;
+
+
+                if (event.getSource().getEntity() instanceof Player && !Config.allowPlayerDamage)
+                {
+                    event.setNewDamage(0);
+                    return;
+                }
+
+                if (event.getSource().getEntity() != null && (event.getSource().getEntity().is(ownable.getOwner()) && !Config.allowOwnerDamage))
+                {
+                    event.setNewDamage(0);
                 }
             }
         }

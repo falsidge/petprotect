@@ -1,7 +1,6 @@
 package lol.sylvie.petprotect.mixin;
 
 import lol.sylvie.petprotect.Config;
-import lol.sylvie.petprotect.PetProtect;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.ai.goal.target.OwnerHurtTargetGoal;
@@ -13,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(OwnerHurtTargetGoal.class)
-public class AttackWithOwnerGoalMixin {
-
+public class AttackWithOwnerGoalMixin
+{
     @Shadow @Final private TamableAnimal tameAnimal;
 
     @Inject(method = "canUse", at = @At("HEAD"), cancellable = true)

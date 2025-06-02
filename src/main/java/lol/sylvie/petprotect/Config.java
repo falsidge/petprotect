@@ -11,13 +11,12 @@ public class Config {
 
     private static final ModConfigSpec.BooleanValue PREVENT_PET_DAMAGE = BUILDER
             .define("preventPetDamage", true);
-
     private static final ModConfigSpec.BooleanValue PREVENT_PET_ATTACK = BUILDER
             .define("preventPetAttack", true);
-
-
     private static final ModConfigSpec.BooleanValue ALLOW_OWNER_DAMAGE = BUILDER
             .define("allowOwnerDamage", false);
+    private static final ModConfigSpec.BooleanValue ALLOW_PLAYER_DAMAGE = BUILDER
+            .define("allowPlayerDamage", false);
     private static final ModConfigSpec.BooleanValue IGNORE_CREATIVE = BUILDER
             .define("ignoreCreative", true);
 
@@ -27,6 +26,7 @@ public class Config {
     public static boolean preventPetDamage;
     public static boolean preventPetAttack;
     public static boolean allowOwnerDamage;
+    public static boolean allowPlayerDamage;
     public static boolean ignoreCreative;
 
     @SubscribeEvent
@@ -35,6 +35,7 @@ public class Config {
         preventPetDamage = PREVENT_PET_DAMAGE.get();
         preventPetAttack = PREVENT_PET_ATTACK.get();
         allowOwnerDamage = ALLOW_OWNER_DAMAGE.get();
+        allowPlayerDamage = ALLOW_PLAYER_DAMAGE.get();
         ignoreCreative = IGNORE_CREATIVE.get();
     }
 }

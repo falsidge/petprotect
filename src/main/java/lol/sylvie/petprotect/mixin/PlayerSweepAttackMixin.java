@@ -3,6 +3,7 @@ package lol.sylvie.petprotect.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import lol.sylvie.petprotect.Config;
+import net.minecraft.world.entity.OwnableEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -20,13 +21,27 @@ public class PlayerSweepAttackMixin
         if (instance.isSpectator())  return original.call(instance, entity);
         if (Config.ignoreCreative && instance.isCreative())  return original.call(instance, entity);
 
-        if (entity instanceof TamableAnimal tameable) {
+
+        if (entity instanceof TamableAnimal tameable)
+        {
+            if (!Config.allowPlayerDamage) return true;
             if (tameable.getOwner() == null)  return original.call(instance, entity);
 
-            if (!(tameable.isOwnedBy(instance) && Config.allowOwnerDamage)) {
+            if (tameable.isOwnedBy(instance) && !Config.allowOwnerDamage) {
+                return true;
+            }
+        }
+        if (entity instanceof OwnableEntity ownable)
+        {
+            if (!Config.allowPlayerDamage) return true;
+            if (ownable.getOwner() == null) return original.call(instance, entity);
+
+            if ((instance.is(ownable.getOwner()) && !Config.allowOwnerDamage))
+            {
                 return true;
             }
         }
         return original.call(instance, entity);
     }
+
 }
